@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package auction;
 
-option go_package = "github.com/radiusxyz/lightbulb-tdx/proto/auction";
+option go_package = "github.com/radiusxyz/lightbulb-proto/proto/auction";
 
 // AuctionService defines the RPC methods for auction operations.
 service AuctionService {

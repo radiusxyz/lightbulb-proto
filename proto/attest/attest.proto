@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package attest;
-option go_package = "github.com/radiusxyz/lightbulb-tdx/proto/attest";
+option go_package = "github.com/radiusxyz/lightbulb-proto/proto/attest";
 
 
 service AttestService {
