@@ -31,13 +31,19 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// AuctionService 정의
+// AuctionService defines the RPC methods for auction operations.
 type AuctionServiceClient interface {
+	// Starts a new auction.
 	StartAuction(ctx context.Context, in *StartAuctionRequest, opts ...grpc.CallOption) (*StartAuctionResponse, error)
+	// Submits a bid for an auction.
 	SubmitBid(ctx context.Context, in *SubmitBidRequest, opts ...grpc.CallOption) (*SubmitBidResponse, error)
+	// Submits a batch of bids for an auction.
 	SubmitBidBatch(ctx context.Context, in *SubmitBidBatchRequest, opts ...grpc.CallOption) (*SubmitBidBatchResponse, error)
+	// Requests sale information for an auction.
 	RequestSaleInfo(ctx context.Context, in *RequestSaleInfoRequest, opts ...grpc.CallOption) (*RequestSaleInfoResponse, error)
+	// Retrieves the latest transactions of bids (TOB).
 	GetLatestTob(ctx context.Context, in *GetLatestTobRequest, opts ...grpc.CallOption) (*GetLatestTobResponse, error)
+	// Retrieves the current state of an auction.
 	GetAuctionState(ctx context.Context, in *GetAuctionStateRequest, opts ...grpc.CallOption) (*GetAuctionStateResponse, error)
 }
 
@@ -113,13 +119,19 @@ func (c *auctionServiceClient) GetAuctionState(ctx context.Context, in *GetAucti
 // All implementations must embed UnimplementedAuctionServiceServer
 // for forward compatibility.
 //
-// AuctionService 정의
+// AuctionService defines the RPC methods for auction operations.
 type AuctionServiceServer interface {
+	// Starts a new auction.
 	StartAuction(context.Context, *StartAuctionRequest) (*StartAuctionResponse, error)
+	// Submits a bid for an auction.
 	SubmitBid(context.Context, *SubmitBidRequest) (*SubmitBidResponse, error)
+	// Submits a batch of bids for an auction.
 	SubmitBidBatch(context.Context, *SubmitBidBatchRequest) (*SubmitBidBatchResponse, error)
+	// Requests sale information for an auction.
 	RequestSaleInfo(context.Context, *RequestSaleInfoRequest) (*RequestSaleInfoResponse, error)
+	// Retrieves the latest transactions of bids (TOB).
 	GetLatestTob(context.Context, *GetLatestTobRequest) (*GetLatestTobResponse, error)
+	// Retrieves the current state of an auction.
 	GetAuctionState(context.Context, *GetAuctionStateRequest) (*GetAuctionStateResponse, error)
 	mustEmbedUnimplementedAuctionServiceServer()
 }
