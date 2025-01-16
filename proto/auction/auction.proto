@@ -16,7 +16,7 @@ service AuctionService {
   rpc SubmitBidBatch(SubmitBidBatchRequest) returns (SubmitBidBatchResponse);
 
   // Requests sale information for an auction.
-  rpc RequestSaleInfo(RequestSaleInfoRequest) returns (RequestSaleInfoResponse);
+  rpc RequestSaleInfo(GetAuctionInfoRequest) returns (GetAuctionInfoResponse);
 
   // Retrieves the latest transactions of bids (TOB).
   rpc GetLatestTob(GetLatestTobRequest) returns (GetLatestTobResponse);
@@ -27,7 +27,7 @@ service AuctionService {
 
 // Request to start a new auction.
 message StartAuctionRequest {
-  string auction_id = 1;  // The unique identifier of the auction.
+  int64 chain_id = 1;     // The unique identifier of the chain.
   AuctionInfo info = 2;   // The details of the auction to start.
 }
 
@@ -39,8 +39,9 @@ message StartAuctionResponse {
 
 // Request to submit a bid for an auction.
 message SubmitBidRequest {
-  string auction_id = 1;  // The unique identifier of the auction.
-  Bid bid = 2;            // The bid details to submit.
+  int64 chain_id = 1;     // The unique identifier of the chain.
+  string auction_id = 2;  // The unique identifier of the auction.
+  Bid bid = 3;            // The bid details to submit.
 }
 
 // Response for submitting a bid.
@@ -51,8 +52,9 @@ message SubmitBidResponse {
 
 // Request to submit multiple bids for an auction.
 message SubmitBidBatchRequest {
-  string auction_id = 1;  // The unique identifier of the auction.
-  repeated Bid bids = 2;  // The list of bids to submit.
+  int64 chain_id = 1;     // The unique identifier of the chain.
+  string auction_id = 2;  // The unique identifier of the auction.
+  repeated Bid bids = 3;  // The list of bids to submit.
 }
 
 // Response for submitting multiple bids.
@@ -61,17 +63,21 @@ message SubmitBidBatchResponse {
   string message = 2;   // Additional information about the operation.
 }
 
-// Request for sale information.
-message RequestSaleInfoRequest {}
+// Request for auction information.
+message GetAuctionInfoRequest {
+  uint64 chain_id = 1;     // The unique identifier of the chain.
+  string auction_id = 2;   // The unique identifier of the auction.
+}
 
-// Response containing sale information.
-message RequestSaleInfoResponse {
-  string auction_id = 1;  // The unique identifier of the auction.
-  AuctionInfo info = 2;   // The details of the auction.
+// Response containing auction information.
+message GetAuctionInfoResponse {
+  AuctionInfo info = 1;  // The details of the auction.
 }
 
 // Request for the latest transactions of bids (TOB).
-message GetLatestTobRequest {}
+message GetLatestTobRequest {
+  int64 chain_id = 1;  // The unique identifier of the chain.
+}
 
 // Response containing the latest transactions of bids.
 message GetLatestTobResponse {
@@ -79,7 +85,9 @@ message GetLatestTobResponse {
 }
 
 // Request for the current state of an auction.
-message GetAuctionStateRequest {}
+message GetAuctionStateRequest {
+  int64 chain_id = 1;     // The unique identifier of the chain.
+}
 
 // Response containing the current state of an auction.
 message GetAuctionStateResponse {

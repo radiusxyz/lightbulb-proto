@@ -40,7 +40,7 @@ type AuctionServiceClient interface {
 	// Submits a batch of bids for an auction.
 	SubmitBidBatch(ctx context.Context, in *SubmitBidBatchRequest, opts ...grpc.CallOption) (*SubmitBidBatchResponse, error)
 	// Requests sale information for an auction.
-	RequestSaleInfo(ctx context.Context, in *RequestSaleInfoRequest, opts ...grpc.CallOption) (*RequestSaleInfoResponse, error)
+	RequestSaleInfo(ctx context.Context, in *GetAuctionInfoRequest, opts ...grpc.CallOption) (*GetAuctionInfoResponse, error)
 	// Retrieves the latest transactions of bids (TOB).
 	GetLatestTob(ctx context.Context, in *GetLatestTobRequest, opts ...grpc.CallOption) (*GetLatestTobResponse, error)
 	// Retrieves the current state of an auction.
@@ -85,9 +85,9 @@ func (c *auctionServiceClient) SubmitBidBatch(ctx context.Context, in *SubmitBid
 	return out, nil
 }
 
-func (c *auctionServiceClient) RequestSaleInfo(ctx context.Context, in *RequestSaleInfoRequest, opts ...grpc.CallOption) (*RequestSaleInfoResponse, error) {
+func (c *auctionServiceClient) RequestSaleInfo(ctx context.Context, in *GetAuctionInfoRequest, opts ...grpc.CallOption) (*GetAuctionInfoResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(RequestSaleInfoResponse)
+	out := new(GetAuctionInfoResponse)
 	err := c.cc.Invoke(ctx, AuctionService_RequestSaleInfo_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -128,7 +128,7 @@ type AuctionServiceServer interface {
 	// Submits a batch of bids for an auction.
 	SubmitBidBatch(context.Context, *SubmitBidBatchRequest) (*SubmitBidBatchResponse, error)
 	// Requests sale information for an auction.
-	RequestSaleInfo(context.Context, *RequestSaleInfoRequest) (*RequestSaleInfoResponse, error)
+	RequestSaleInfo(context.Context, *GetAuctionInfoRequest) (*GetAuctionInfoResponse, error)
 	// Retrieves the latest transactions of bids (TOB).
 	GetLatestTob(context.Context, *GetLatestTobRequest) (*GetLatestTobResponse, error)
 	// Retrieves the current state of an auction.
@@ -152,7 +152,7 @@ func (UnimplementedAuctionServiceServer) SubmitBid(context.Context, *SubmitBidRe
 func (UnimplementedAuctionServiceServer) SubmitBidBatch(context.Context, *SubmitBidBatchRequest) (*SubmitBidBatchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitBidBatch not implemented")
 }
-func (UnimplementedAuctionServiceServer) RequestSaleInfo(context.Context, *RequestSaleInfoRequest) (*RequestSaleInfoResponse, error) {
+func (UnimplementedAuctionServiceServer) RequestSaleInfo(context.Context, *GetAuctionInfoRequest) (*GetAuctionInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestSaleInfo not implemented")
 }
 func (UnimplementedAuctionServiceServer) GetLatestTob(context.Context, *GetLatestTobRequest) (*GetLatestTobResponse, error) {
@@ -237,7 +237,7 @@ func _AuctionService_SubmitBidBatch_Handler(srv interface{}, ctx context.Context
 }
 
 func _AuctionService_RequestSaleInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RequestSaleInfoRequest)
+	in := new(GetAuctionInfoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -249,7 +249,7 @@ func _AuctionService_RequestSaleInfo_Handler(srv interface{}, ctx context.Contex
 		FullMethod: AuctionService_RequestSaleInfo_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuctionServiceServer).RequestSaleInfo(ctx, req.(*RequestSaleInfoRequest))
+		return srv.(AuctionServiceServer).RequestSaleInfo(ctx, req.(*GetAuctionInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
