@@ -20,9 +20,8 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	AuctionService_StartAuction_FullMethodName    = "/auction.AuctionService/StartAuction"
-	AuctionService_SubmitBid_FullMethodName       = "/auction.AuctionService/SubmitBid"
-	AuctionService_SubmitBidBatch_FullMethodName  = "/auction.AuctionService/SubmitBidBatch"
-	AuctionService_RequestSaleInfo_FullMethodName = "/auction.AuctionService/RequestSaleInfo"
+	AuctionService_SubmitBids_FullMethodName      = "/auction.AuctionService/SubmitBids"
+	AuctionService_GetAuctionInfo_FullMethodName  = "/auction.AuctionService/GetAuctionInfo"
 	AuctionService_GetLatestTob_FullMethodName    = "/auction.AuctionService/GetLatestTob"
 	AuctionService_GetAuctionState_FullMethodName = "/auction.AuctionService/GetAuctionState"
 )
@@ -33,15 +32,13 @@ const (
 //
 // AuctionService defines the RPC methods for auction operations.
 type AuctionServiceClient interface {
-	// Starts a new auction.
+	// Initiates a new auction.
 	StartAuction(ctx context.Context, in *StartAuctionRequest, opts ...grpc.CallOption) (*StartAuctionResponse, error)
-	// Submits a bid for an auction.
-	SubmitBid(ctx context.Context, in *SubmitBidRequest, opts ...grpc.CallOption) (*SubmitBidResponse, error)
-	// Submits a batch of bids for an auction.
-	SubmitBidBatch(ctx context.Context, in *SubmitBidBatchRequest, opts ...grpc.CallOption) (*SubmitBidBatchResponse, error)
-	// Requests sale information for an auction.
-	RequestSaleInfo(ctx context.Context, in *GetAuctionInfoRequest, opts ...grpc.CallOption) (*GetAuctionInfoResponse, error)
-	// Retrieves the latest transactions of bids (TOB).
+	// Submits multiple bids for a specific auction.
+	SubmitBids(ctx context.Context, in *SubmitBidsRequest, opts ...grpc.CallOption) (*SubmitBidsResponse, error)
+	// Retrieves detailed information about a specific auction.
+	GetAuctionInfo(ctx context.Context, in *GetAuctionInfoRequest, opts ...grpc.CallOption) (*GetAuctionInfoResponse, error)
+	// Retrieves the Tx list of the latest block.
 	GetLatestTob(ctx context.Context, in *GetLatestTobRequest, opts ...grpc.CallOption) (*GetLatestTobResponse, error)
 	// Retrieves the current state of an auction.
 	GetAuctionState(ctx context.Context, in *GetAuctionStateRequest, opts ...grpc.CallOption) (*GetAuctionStateResponse, error)
@@ -65,30 +62,20 @@ func (c *auctionServiceClient) StartAuction(ctx context.Context, in *StartAuctio
 	return out, nil
 }
 
-func (c *auctionServiceClient) SubmitBid(ctx context.Context, in *SubmitBidRequest, opts ...grpc.CallOption) (*SubmitBidResponse, error) {
+func (c *auctionServiceClient) SubmitBids(ctx context.Context, in *SubmitBidsRequest, opts ...grpc.CallOption) (*SubmitBidsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SubmitBidResponse)
-	err := c.cc.Invoke(ctx, AuctionService_SubmitBid_FullMethodName, in, out, cOpts...)
+	out := new(SubmitBidsResponse)
+	err := c.cc.Invoke(ctx, AuctionService_SubmitBids_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *auctionServiceClient) SubmitBidBatch(ctx context.Context, in *SubmitBidBatchRequest, opts ...grpc.CallOption) (*SubmitBidBatchResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SubmitBidBatchResponse)
-	err := c.cc.Invoke(ctx, AuctionService_SubmitBidBatch_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *auctionServiceClient) RequestSaleInfo(ctx context.Context, in *GetAuctionInfoRequest, opts ...grpc.CallOption) (*GetAuctionInfoResponse, error) {
+func (c *auctionServiceClient) GetAuctionInfo(ctx context.Context, in *GetAuctionInfoRequest, opts ...grpc.CallOption) (*GetAuctionInfoResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetAuctionInfoResponse)
-	err := c.cc.Invoke(ctx, AuctionService_RequestSaleInfo_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, AuctionService_GetAuctionInfo_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -121,15 +108,13 @@ func (c *auctionServiceClient) GetAuctionState(ctx context.Context, in *GetAucti
 //
 // AuctionService defines the RPC methods for auction operations.
 type AuctionServiceServer interface {
-	// Starts a new auction.
+	// Initiates a new auction.
 	StartAuction(context.Context, *StartAuctionRequest) (*StartAuctionResponse, error)
-	// Submits a bid for an auction.
-	SubmitBid(context.Context, *SubmitBidRequest) (*SubmitBidResponse, error)
-	// Submits a batch of bids for an auction.
-	SubmitBidBatch(context.Context, *SubmitBidBatchRequest) (*SubmitBidBatchResponse, error)
-	// Requests sale information for an auction.
-	RequestSaleInfo(context.Context, *GetAuctionInfoRequest) (*GetAuctionInfoResponse, error)
-	// Retrieves the latest transactions of bids (TOB).
+	// Submits multiple bids for a specific auction.
+	SubmitBids(context.Context, *SubmitBidsRequest) (*SubmitBidsResponse, error)
+	// Retrieves detailed information about a specific auction.
+	GetAuctionInfo(context.Context, *GetAuctionInfoRequest) (*GetAuctionInfoResponse, error)
+	// Retrieves the Tx list of the latest block.
 	GetLatestTob(context.Context, *GetLatestTobRequest) (*GetLatestTobResponse, error)
 	// Retrieves the current state of an auction.
 	GetAuctionState(context.Context, *GetAuctionStateRequest) (*GetAuctionStateResponse, error)
@@ -146,14 +131,11 @@ type UnimplementedAuctionServiceServer struct{}
 func (UnimplementedAuctionServiceServer) StartAuction(context.Context, *StartAuctionRequest) (*StartAuctionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartAuction not implemented")
 }
-func (UnimplementedAuctionServiceServer) SubmitBid(context.Context, *SubmitBidRequest) (*SubmitBidResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubmitBid not implemented")
+func (UnimplementedAuctionServiceServer) SubmitBids(context.Context, *SubmitBidsRequest) (*SubmitBidsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubmitBids not implemented")
 }
-func (UnimplementedAuctionServiceServer) SubmitBidBatch(context.Context, *SubmitBidBatchRequest) (*SubmitBidBatchResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubmitBidBatch not implemented")
-}
-func (UnimplementedAuctionServiceServer) RequestSaleInfo(context.Context, *GetAuctionInfoRequest) (*GetAuctionInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RequestSaleInfo not implemented")
+func (UnimplementedAuctionServiceServer) GetAuctionInfo(context.Context, *GetAuctionInfoRequest) (*GetAuctionInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAuctionInfo not implemented")
 }
 func (UnimplementedAuctionServiceServer) GetLatestTob(context.Context, *GetLatestTobRequest) (*GetLatestTobResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLatestTob not implemented")
@@ -200,56 +182,38 @@ func _AuctionService_StartAuction_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuctionService_SubmitBid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SubmitBidRequest)
+func _AuctionService_SubmitBids_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitBidsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuctionServiceServer).SubmitBid(ctx, in)
+		return srv.(AuctionServiceServer).SubmitBids(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuctionService_SubmitBid_FullMethodName,
+		FullMethod: AuctionService_SubmitBids_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuctionServiceServer).SubmitBid(ctx, req.(*SubmitBidRequest))
+		return srv.(AuctionServiceServer).SubmitBids(ctx, req.(*SubmitBidsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuctionService_SubmitBidBatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SubmitBidBatchRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuctionServiceServer).SubmitBidBatch(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AuctionService_SubmitBidBatch_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuctionServiceServer).SubmitBidBatch(ctx, req.(*SubmitBidBatchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuctionService_RequestSaleInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AuctionService_GetAuctionInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetAuctionInfoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuctionServiceServer).RequestSaleInfo(ctx, in)
+		return srv.(AuctionServiceServer).GetAuctionInfo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuctionService_RequestSaleInfo_FullMethodName,
+		FullMethod: AuctionService_GetAuctionInfo_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuctionServiceServer).RequestSaleInfo(ctx, req.(*GetAuctionInfoRequest))
+		return srv.(AuctionServiceServer).GetAuctionInfo(ctx, req.(*GetAuctionInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -302,16 +266,12 @@ var AuctionService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuctionService_StartAuction_Handler,
 		},
 		{
-			MethodName: "SubmitBid",
-			Handler:    _AuctionService_SubmitBid_Handler,
+			MethodName: "SubmitBids",
+			Handler:    _AuctionService_SubmitBids_Handler,
 		},
 		{
-			MethodName: "SubmitBidBatch",
-			Handler:    _AuctionService_SubmitBidBatch_Handler,
-		},
-		{
-			MethodName: "RequestSaleInfo",
-			Handler:    _AuctionService_RequestSaleInfo_Handler,
+			MethodName: "GetAuctionInfo",
+			Handler:    _AuctionService_GetAuctionInfo_Handler,
 		},
 		{
 			MethodName: "GetLatestTob",
